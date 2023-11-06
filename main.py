@@ -59,10 +59,14 @@ def get_dotted_str(win, x, y):
                 y += 1
                 if len(current_str) < 30:
                     win.addch(x, y - 1, char)
-                win.addch(x, y - 2, "*")
+                if len(current_str) != 1:
+                    win.addch(x, y - 2, "*")
         win.border(0, 0, 0, 0, 0, 0, 0, 0)
     return current_str
 
+def reset(win):
+    win.clear()
+    win.border(0, 0, 0, 0, 0, 0, 0, 0)
 
 def main():
     curses.initscr()
@@ -72,21 +76,46 @@ def main():
     curses.curs_set(0)
     win.border(0, 0, 0, 0, 0, 0, 0, 0)
 
-    centered_x = add_centered_str(win, 10, 30, "Enter your username")
-    win.addstr(12, centered_x, "Enter your password")
-    name = get_written_str(win, 11, centered_x)
-    password = get_dotted_str(win, 13, centered_x)
-    #try:
+    x = add_centered_str(win, 10, 20, "Enter your username")
+    win.addstr(12, x, "Enter your password")
+    name = get_written_str(win, 11, x)
+    password = get_dotted_str(win, 13, x)
+    name_and_pass = load("names.pk")
+    new_password = ""
+    reset(win)
+    if name_and_pass.get(name) != None:
+        if password == name_and_pass.get(name):
+            win.addstr(10, x, "Welcome back.")
+            win.getch()
+        else:
+            win.addstr(10, x, "Wrong password!")
+            win.getch()
+    else:
+        win.addstr(10, x, "Welcome new user.")
+        win.addstr(11, x, "Enter new password.")
+        new_password = get_dotted_str(win, 12, x)
+        win.addstr(12, x, "Wrong password.")
+        win.getch()
+        while password != new_password:
+            reset(win)
+            win.addstr(9, x, "Welcome new user.")
+            win.addstr(10, x, "Enter Your Password")
+            password = get_dotted_str(win, 12, x)
+            win.addstr(12, x, "Comfirm new password.")
+            new_password = get_dotted_str(win, 12, x)
 
     curses.endwin()
 
-def save(word_list,filename = 'mypickle.pk'):
+
+def save(word_list, filename='mypickle.pk'):
     with open(filename, 'wb') as fi:
         pickle.dump(word_list, fi)
 
-def load(filename = 'mypickle.pk'):
+
+def load(filename='mypickle.pk'):
     with open(filename, 'rb') as fi:
         return pickle.load(fi)
+
 
 if __name__ == "__main__":
     main()
