@@ -16,7 +16,7 @@ def get_written_str(win, x=0, y=0, max=30)->str:
     current_str = ""
     while True:
         key = win.getch()
-        if key == 127:  # backspace
+        if str(key) in ('KEY_BACKSPACE', '\b', '\x7f'): # backspace
             if len(current_str) > 0:
                 current_str = current_str[:-1]
                 y -= 1
